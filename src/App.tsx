@@ -1,12 +1,17 @@
 import React from 'react';
-import logo from './logo.svg';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+
 import './App.css';
 import CitiesList from './CitiesList';
 
 function App() {
   return (
     <div className="App">
-      <CitiesList cities={['Budapest', 'Bukarest']}/>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<CitiesList cities={['Budapest', 'Bukarest']} />} />
+        </Routes>
+      </BrowserRouter>
     </div>
   );
 }
