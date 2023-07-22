@@ -6,7 +6,7 @@ import CitiesList from './CitiesList';
 function App() {
   return (
     <div className="App">
-      <CitiesList/>
+      <CitiesList cities={['Budapest', 'Bukarest']}/>
     </div>
   );
 }

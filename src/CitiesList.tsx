@@ -1,7 +1,6 @@
-function CitiesList() {
+function CitiesList(props: { cities: string[] }) {
     return <div data-testid='cities-list'>
-        <p>Budapest</p>
-        <p>Berlin</p>
+        {props.cities.map((city, index) => <p key={index}>{city}</p>)}
     </div>
 }
 

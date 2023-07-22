@@ -1,9 +1,11 @@
 import { render, screen } from '@testing-library/react';
 import CitiesList from './CitiesList';
 
-test('Tests CitiesList rendering with a p tag containing Budapest', () => {
-    render(<CitiesList/>);
-    const budapestElement = screen.getByText(/Budapest/i);
-    expect(budapestElement).toBeInTheDocument();
-    expect(budapestElement.tagName).toBe('P');
+test('Tests CitiesList rendering the input cities', () => {
+    const cities = ['Vienna', 'Chicago'];
+    render(<CitiesList cities={cities}/>);
+    for(let city of cities){
+        const cityElement = screen.getByText(new RegExp(`${city}`, 'i'));
+        expect(cityElement).toBeInTheDocument();
+    }
 }) 
