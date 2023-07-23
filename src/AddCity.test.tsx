@@ -7,3 +7,9 @@ test('Renders a input field', () => {
     const textField = getByRole('textbox');
     expect(textField).toBeInTheDocument();
 })
+
+test('', () => {
+    const { getByRole } = render(<AddCity />);
+    const textField = getByRole('textbox');
+    expect(textField).toBeInTheDocument();
+})

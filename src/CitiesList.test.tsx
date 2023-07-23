@@ -17,7 +17,12 @@ it('renders the input cities', () => {
     }
 }) 
 
+
 it('call navigates to /add-city on button press', () => {
+//     const mockHistoryPush = jest.fn();
+//   useNavigate.mockReturnValue({
+//     push: mockHistoryPush,
+//   });
     const {getByRole} = render(<CitiesList cities={[]}/>);
     const buttonElement = getByRole('button');
     fireEvent.click(buttonElement);
