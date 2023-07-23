@@ -1,17 +1,20 @@
 import React from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { createBrowserRouter, RouterProvider, } from "react-router-dom";
 
 import './App.css';
 import CitiesList from './CitiesList';
 
+const router = createBrowserRouter([
+  {
+    path: "/",
+    element: <CitiesList cities={['Budapest', 'Bukarest']} />
+  },
+]);
+
 function App() {
   return (
     <div className="App">
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<CitiesList cities={['Budapest', 'Bukarest']} />} />
-        </Routes>
-      </BrowserRouter>
+      <RouterProvider router={router} />
     </div>
   );
 }
