@@ -17,7 +17,7 @@ function AddCity() {
     function calculateSearchResults(){
         const res:string[] = [];
         for(let city of selectableCities){
-            if(city.includes(searchValue)){
+            if(city.toLocaleLowerCase().includes(searchValue.toLowerCase())){
                 res.push(city);
             }
         }
