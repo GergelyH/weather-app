@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import './Spinner.css';
 import { selectableCities } from './selectableCities';
 
@@ -6,11 +6,12 @@ function AddCity() {
     const [isLoading, setIsLoading] = useState(false);
     const [searchValue, setSearchValue] = useState('');
     const [searchResults, setSearchResults] = useState<string[]>([]);
+    
+    useEffect(calculateSearchResults,[searchValue]);
 
     function onInputChange(e: React.FormEvent<HTMLInputElement>){
         setIsLoading(true);
         setSearchValue(e.currentTarget.value);
-        calculateSearchResults();
     }
 
     function calculateSearchResults(){
