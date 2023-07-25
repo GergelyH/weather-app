@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router';
+import City from './City';
 
 function CitiesList(props: { cities: string[] }) {
     const navigate = useNavigate();
@@ -7,7 +8,7 @@ function CitiesList(props: { cities: string[] }) {
     }
 
     return <div data-testid='cities-list'>
-        {props.cities.map((city, index) => <p key={index}>{city}</p>)}
+        {props.cities.map((city, index) => <City name={city} key={index}/>)}
         <button data-testid='add-city-button' onClick={addCityOnClick}>+</button>
     </div>
 }
