@@ -8,7 +8,7 @@ function CitiesList(props: { cities: string[] }) {
 
     return <div data-testid='cities-list'>
         {props.cities.map((city, index) => <p key={index}>{city}</p>)}
-        <button onClick={addCityOnClick}>+</button>
+        <button data-testid='add-city-button' onClick={addCityOnClick}>+</button>
     </div>
 }
 

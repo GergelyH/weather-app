@@ -1,5 +1,5 @@
 function AddCity() {
-    return <input></input>
+    return <input data-testid='city-search-textbox'></input>
 }
 
 export default AddCity;
