@@ -33,3 +33,15 @@ test('can only save a city after a successful search and city selection', () => 
     const saveButton = screen.getByTestId('save-button');
     fireEvent.click(saveButton);
 })
+
+test('expanding the search unselects the currently selected item', () => {
+    render(<AddCity />);
+    const textField = screen.getByRole('textbox');
+    fireEvent.change(textField, {target: {value: 'ndo'}});
+    const cityElement = screen.getByText('London');
+    fireEvent.click(cityElement);
+    expect(cityElement).toHaveClass('selected');
+    
+    fireEvent.change(textField, {target: {value: 'ndon'}});
+    expect(cityElement).not.toHaveClass('selected');
+});
