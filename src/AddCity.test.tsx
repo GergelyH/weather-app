@@ -1,4 +1,4 @@
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, queryByTestId } from '@testing-library/react';
 
 import AddCity from "./AddCity";
 
@@ -19,4 +19,17 @@ test('can search for a city and it appears', () => {
     fireEvent.change(textField, {target: {value: 'ienna'}})
     const cityElement = screen.getByText('Vienna');
     expect(cityElement).toBeInTheDocument();
+})
+
+test('can only save a city after a successful search and city selection', () => {
+    render(<AddCity />);
+    expect(screen.queryByTestId('save-button')).toBeNull();
+    const textField = screen.getByRole('textbox');
+    fireEvent.change(textField, {target: {value: 'ndo'}})
+    expect(screen.queryByTestId('save-button')).toBeNull();
+    const cityElement = screen.getByText('London');
+    fireEvent.click(cityElement);
+    expect(cityElement).toHaveClass('selected');
+    const saveButton = screen.getByTestId('save-button');
+    fireEvent.click(saveButton);
 })
