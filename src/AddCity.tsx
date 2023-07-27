@@ -25,6 +25,10 @@ function AddCity() {
         setIsLoading(true);
         setSearchValue(e.currentTarget.value);
     }
+    
+    function getSelectedCity(){
+        return selectedCityIndex === null ? null : searchResults[selectedCityIndex];
+    }
 
     function calculateSearchResults(){
         const res:string[] = [];
@@ -34,6 +38,10 @@ function AddCity() {
                     res.push(city);
                 }
             }
+        }
+        const selectedCity = getSelectedCity();
+        if (selectedCity && !res.includes(selectedCity)) {
+            setSelectedCityIndex(null);
         }
         setSearchResults(res);
         setIsLoading(false);
