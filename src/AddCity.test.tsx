@@ -2,6 +2,14 @@ import { render, screen, fireEvent, queryByTestId } from '@testing-library/react
 
 import AddCity from "./AddCity";
 
+test('can search for a city and it appears', () => {
+    render(<AddCity />);
+    const textField = screen.getByRole('textbox');
+    fireEvent.change(textField, {target: {value: 'ienna'}})
+    const cityElement = screen.getByText('Vienna');
+    expect(cityElement).toBeInTheDocument();
+})
+
 test('shows the correct result list after search', () => {
     render(<AddCity />);
     const textField = screen.getByRole('textbox');
@@ -11,14 +19,6 @@ test('shows the correct result list after search', () => {
         const cityElement = screen.getByText(capital);
         expect(cityElement).toBeInTheDocument();
     }
-})
-
-test('can search for a city and it appears', () => {
-    render(<AddCity />);
-    const textField = screen.getByRole('textbox');
-    fireEvent.change(textField, {target: {value: 'ienna'}})
-    const cityElement = screen.getByText('Vienna');
-    expect(cityElement).toBeInTheDocument();
 })
 
 test('can only save a city after a successful search and city selection', () => {
