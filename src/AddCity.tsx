@@ -3,6 +3,7 @@ import classNames from "classnames";
 
 import './Spinner.css';
 import { selectableCities } from './selectableCities';
+import { calculateCitySearchResults } from './CitySearch';
 
 function AddCity() {
     const [isLoading, setIsLoading] = useState(false);
@@ -10,8 +11,6 @@ function AddCity() {
     const [searchResults, setSearchResults] = useState<string[]>([]);
     const [selectedCityIndex, setSelectedCityIndex] = useState<number | null>(null);
     
-    useEffect(calculateSearchResults,[searchValue]);
-
     function onSearchResultClick(cityIndex: number) {
         if (cityIndex !== selectedCityIndex) {
             setSelectedCityIndex(cityIndex);
@@ -21,30 +20,25 @@ function AddCity() {
         }
     }
 
-    function onInputChange(e: React.FormEvent<HTMLInputElement>){
+    async function onInputChange(e: React.FormEvent<HTMLInputElement>){
+        const searchValue = e.currentTarget.value;
         setIsLoading(true);
-        setSearchValue(e.currentTarget.value);
+        setSearchValue(searchValue);
+        await calculateSearchResults(searchValue);
+        setIsLoading(false);
     }
     
     function getSelectedCity(){
         return selectedCityIndex === null ? null : searchResults[selectedCityIndex];
     }
 
-    function calculateSearchResults(){
-        const res:string[] = [];
-        if (searchValue) {
-            for (let city of selectableCities) {
-                if (city.toLocaleLowerCase().includes(searchValue.toLowerCase())) {
-                    res.push(city);
-                }
-            }
-        }
+    async function calculateSearchResults(searchValue:string){
+        const res = await calculateCitySearchResults(searchValue);
         const selectedCity = getSelectedCity();
         if (selectedCity && !res.includes(selectedCity)) {
             setSelectedCityIndex(null);
         }
         setSearchResults(res);
-        setIsLoading(false);
     }
     
     const cityList = searchResults.map((city, index) =>
