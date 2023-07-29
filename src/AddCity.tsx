@@ -4,6 +4,7 @@ import classNames from "classnames";
 import './Spinner.css';
 import { selectableCities } from './selectableCities';
 import { calculateCitySearchResults } from './CitySearch';
+import Spinner from './Spinner';
 
 function AddCity() {
     const [isLoading, setIsLoading] = useState(false);
@@ -56,7 +57,7 @@ function AddCity() {
     return <>
         <input onChange={onInputChange} data-testid='city-search-textbox'></input>
         {isLoading
-         ? <div className="spinner"></div>
+            ? <Spinner />
             : loadedContent} 
     </>
 }
