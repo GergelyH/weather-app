@@ -68,8 +68,8 @@ describe('AddCity', () => {
         expect(cityElement).not.toHaveClass('selected');
     });
 
-    test('loading state is rendered when and only when the search results are being calculated', () => {
-        let resolveFunction;
+    test('loading state is rendered when and only when the search results are being calculated', async () => {
+        let resolveFunction!: (value?: string[]) => void;
         const promise = new Promise(resolve => {
             resolveFunction = resolve;
         });
@@ -77,10 +77,17 @@ describe('AddCity', () => {
         (calculateCitySearchResults as jest.Mock).mockImplementation(() => promise);
 
         render(<AddCity />);
+        
         const textField = screen.getByRole('textbox');
         fireEvent.change(textField, { target: { value: 'l' } });
 
         const spinner = screen.getByTestId('spinner');
         expect(spinner).toBeInTheDocument();
+        
+        resolveFunction(['Bern', 'Bukarest']);
+        const cityElement = await screen.findByText('Bern');
+        expect(cityElement).toBeInTheDocument();
+        const spinnerQuery = screen.queryByTestId('spinner');
+        expect(spinnerQuery).toBeNull();
     })
 })
