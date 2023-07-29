@@ -83,6 +83,8 @@ describe('AddCity', () => {
 
         const spinner = screen.getByTestId('spinner');
         expect(spinner).toBeInTheDocument();
+        const searchResultCity = screen.queryByTestId('search-result-city');
+        expect(searchResultCity).toBeNull();
         
         resolveFunction(['Bern', 'Bukarest']);
         const cityElement = await screen.findByText('Bern');
