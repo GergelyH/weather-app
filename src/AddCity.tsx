@@ -7,7 +7,6 @@ import { calculateCitySearchResults } from './CitySearch';
 
 function AddCity() {
     const [isLoading, setIsLoading] = useState(false);
-    const [searchValue, setSearchValue] = useState('');
     const [searchResults, setSearchResults] = useState<string[]>([]);
     const [selectedCityIndex, setSelectedCityIndex] = useState<number | null>(null);
     
@@ -23,7 +22,6 @@ function AddCity() {
     async function onInputChange(e: React.FormEvent<HTMLInputElement>){
         const searchValue = e.currentTarget.value;
         setIsLoading(true);
-        setSearchValue(searchValue);
         await calculateSearchResults(searchValue);
         setIsLoading(false);
     }
