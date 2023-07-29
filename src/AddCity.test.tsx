@@ -1,49 +1,50 @@
-import { render, screen, fireEvent, queryByTestId } from '@testing-library/react';
+import { render, screen, fireEvent, queryByTestId, waitFor } from '@testing-library/react';
 
 import AddCity from "./AddCity";
-import {calculateCitySearchResults} from "./CitySearch";
+import * as citySearch from "./CitySearch";
 
-jest.mock('./CitySearch', () => ({
-    calculateCitySearchResults: jest.fn(),
-}));
+// jest.mock('./CitySearch', () => ({
+//      calculateCitySearchResults: jest.fn(),
+// }));
 
 describe('AddCity', () => {
     beforeEach(() => {
         jest.clearAllMocks();
     });
 
-    test('can search for a city and it appears', () => {
+    test('can search for a city and it appears', async () => {
         render(<AddCity />);
 
         const textField = screen.getByRole('textbox');
-        fireEvent.change(textField, {target: {value: 'ienna'}})
+        fireEvent.change(textField, { target: { value: 'ienna' } })
 
-        const cityElement = screen.getByText('Vienna');
+        const cityElement = await screen.findByText('Vienna');
         expect(cityElement).toBeInTheDocument();
-    })
+    });
 
-    test('shows the correct result list after search', () => {
+    test('shows the correct result list after search', async () => {
         render(<AddCity />);
 
         const textField = screen.getByRole('textbox');
-        fireEvent.change(textField, {target: {value: 'ku'}})
+        fireEvent.change(textField, { target: { value: 'ku' } })
 
         const capitalsToCheck = ['Kuwait City', 'Kuala Lumpur', "Nukuʻalofa", 'Baku'];
-        for(let capital of capitalsToCheck){
-            const cityElement = screen.getByText(capital);
+        for (let capital of capitalsToCheck) {
+            const cityElement = await screen.findByText(capital);
             expect(cityElement).toBeInTheDocument();
         }
     })
 
-    test('can only save a city after a successful search and city selection', () => {
+    test('can only save a city after a successful search and city selection', async () => {
         render(<AddCity />);
         expect(screen.queryByTestId('save-button')).toBeNull();
 
         const textField = screen.getByRole('textbox');
-        fireEvent.change(textField, {target: {value: 'ndo'}})
+        fireEvent.change(textField, { target: { value: 'ndo' } })
+
+        const cityElement = await screen.findByText('London');
         expect(screen.queryByTestId('save-button')).toBeNull();
 
-        const cityElement = screen.getByText('London');
         fireEvent.click(cityElement);
         expect(cityElement).toHaveClass('selected');
 
@@ -51,33 +52,34 @@ describe('AddCity', () => {
         fireEvent.click(saveButton);
     })
 
-    test('expanding the search unselects the currently selected item', () => {
+    test('expanding the search unselects the currently selected item', async () => {
         render(<AddCity />);
         const textField = screen.getByRole('textbox');
-        fireEvent.change(textField, {target: {value: 'ndo'}});
-        let cityElement = screen.getByText('London');
+        fireEvent.change(textField, { target: { value: 'ndo' } });
+        let cityElement = await screen.findByText('London');
         fireEvent.click(cityElement);
         expect(cityElement).toHaveClass('selected');
-        
-        fireEvent.change(textField, {target: {value: 'ndok'}});
+
+        fireEvent.change(textField, { target: { value: 'ndok' } });
         expect(cityElement).not.toBeInTheDocument();
 
-        fireEvent.change(textField, {target: {value: 'ndo'}});
-        cityElement = screen.getByText('London');
+        fireEvent.change(textField, { target: { value: 'ndo' } });
+        cityElement = await screen.findByText('London');
         expect(cityElement).not.toHaveClass('selected');
     });
 
-    test('loading state is rendered when and only when the search results are being calculated', () =>{
+    test('loading state is rendered when and only when the search results are being calculated', () => {
         let resolveFunction;
         const promise = new Promise(resolve => {
-          resolveFunction = resolve;
+            resolveFunction = resolve;
         });
+        const calculateCitySearchResults = jest.spyOn(citySearch, 'calculateCitySearchResults');
         (calculateCitySearchResults as jest.Mock).mockImplementation(() => promise);
 
         render(<AddCity />);
         const textField = screen.getByRole('textbox');
-        fireEvent.change(textField, {target: {value: 'l'}});
-        
+        fireEvent.change(textField, { target: { value: 'l' } });
+
         const spinner = screen.getByTestId('spinner');
         expect(spinner).toBeInTheDocument();
     })
