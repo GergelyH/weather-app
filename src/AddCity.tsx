@@ -44,6 +44,7 @@ function AddCity() {
         <p 
             className={classNames({ 'selected': index === selectedCityIndex })}
             onClick={() => onSearchResultClick(index)}
+            data-testid='search-result-city'
             key={index}
         >
             {city}
