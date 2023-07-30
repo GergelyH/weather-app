@@ -1,4 +1,5 @@
 import { render, screen, waitForElementToBeRemoved } from '@testing-library/react';
+import { BrowserRouter } from 'react-router-dom';
 
 import AddCity from "./AddCity";
 import * as citySearch from "./CitySearch";
@@ -116,4 +117,17 @@ describe('AddCity', () => {
         cityElement = await screen.findByText('London');
         expect(cityElement).toHaveClass('selected');
     });
+
+    test('clicking back button calls navigate', async () => {
+        const mockNavigate = jest.fn();
+        jest.mock('react-router-dom', () => ({
+          ...jest.requireActual('react-router-dom'),
+          useNavigate: () => mockNavigate,
+        }));
+
+        const backArrow = screen.getByTestId('back-button');
+        await userEvent.click(backArrow);
+        
+        expect(mockNavigate).toHaveBeenCalledWith(-1);
+    })
 })
