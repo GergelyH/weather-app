@@ -44,6 +44,26 @@ describe('AddCity', () => {
         await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'));
     });
 
+    test('loading state is rendered while waiting for search results', async () => {
+        let resolveFunction!: (value?: string[]) => void;
+        const promise = new Promise(resolve => {
+            resolveFunction = resolve;
+        });
+        const calculateCitySearchResults = jest.spyOn(citySearch, 'calculateCitySearchResults');
+        (calculateCitySearchResults as jest.Mock).mockImplementation(() => promise);
+
+        render(<AddCity />);
+        
+        const textField = screen.getByRole('textbox');
+        fireEvent.change(textField, { target: { value: 'l' } });
+
+        const spinner = screen.getByTestId('spinner');
+        expect(spinner).toBeInTheDocument();
+        const searchResultCity = screen.queryByTestId('search-result-city');
+        expect(searchResultCity).toBeNull();
+        
+        resolveFunction([]);
+    });
 
     test('save button appears only after city selection', async () => {
         render(<AddCity />);
@@ -74,24 +94,5 @@ describe('AddCity', () => {
         fireEvent.change(textField, { target: { value: 'ndo' } });
         cityElement = await screen.findByText('London');
         expect(cityElement).not.toHaveClass('selected');
-    });
-
-    test('loading state is rendered while waiting for search results', async () => {
-        let resolveFunction!: (value?: string[]) => void;
-        const promise = new Promise(resolve => {
-            resolveFunction = resolve;
-        });
-        const calculateCitySearchResults = jest.spyOn(citySearch, 'calculateCitySearchResults');
-        (calculateCitySearchResults as jest.Mock).mockImplementation(() => promise);
-
-        render(<AddCity />);
-        
-        const textField = screen.getByRole('textbox');
-        fireEvent.change(textField, { target: { value: 'l' } });
-
-        const spinner = screen.getByTestId('spinner');
-        expect(spinner).toBeInTheDocument();
-        const searchResultCity = screen.queryByTestId('search-result-city');
-        expect(searchResultCity).toBeNull();
     });
 })
