@@ -1,11 +1,7 @@
-import { render, screen, fireEvent, queryByTestId, waitFor, waitForElementToBeRemoved } from '@testing-library/react';
+import { render, screen, fireEvent, waitForElementToBeRemoved } from '@testing-library/react';
 
 import AddCity from "./AddCity";
 import * as citySearch from "./CitySearch";
-
-// jest.mock('./CitySearch', () => ({
-//      calculateCitySearchResults: jest.fn(),
-// }));
 
 describe('AddCity', () => {
     beforeEach(() => {
