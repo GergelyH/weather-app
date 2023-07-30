@@ -31,6 +31,16 @@ describe('AddCity', () => {
         }
     })
 
+    test('maximum 8 search results are rendered', async () => {
+        render(<AddCity />);
+
+        const textField = screen.getByRole('textbox');
+        fireEvent.change(textField, { target: { value: 'e' } })
+
+        const searchResults = await screen.findAllByTestId('search-result-city')
+        expect(searchResults.length).toBeLessThanOrEqual(8);
+    })
+
     test('spinner disappears shortly after search', async () => {
         render(<AddCity />);
 
