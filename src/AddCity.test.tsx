@@ -77,12 +77,12 @@ describe('AddCity', () => {
         expect(screen.queryByTestId('save-button')).toBeNull();
 
         const textField = screen.getByRole('textbox');
-        userEvent.type(textField, 'ndo');
+        userEvent.type(textField, 'ndo')
 
         const cityElement = await screen.findByText('London');
         expect(screen.queryByTestId('save-button')).toBeNull();
 
-        userEvent.click(cityElement);
+        await userEvent.click(cityElement);
         expect(cityElement).toHaveClass('selected');
 
     });
@@ -92,14 +92,14 @@ describe('AddCity', () => {
         const textField = screen.getByRole('textbox');
         userEvent.type(textField, 'ndo');
         let cityElement = await screen.findByText('London');
-        userEvent.click(cityElement);
+        await userEvent.click(cityElement);
         expect(cityElement).toHaveClass('selected');
 
-        userEvent.type(textField, 'ndok');
+        await userEvent.type(textField, 'k');
         await waitForElementToBeRemoved(() => screen.getByTestId('spinner'));
         expect(cityElement).not.toBeInTheDocument();
 
-        userEvent.type(textField, 'ndo');
+        await userEvent.type(textField, '{backspace}');
         cityElement = await screen.findByText('London');
         expect(cityElement).not.toHaveClass('selected');
     });
@@ -107,12 +107,12 @@ describe('AddCity', () => {
     test('deleting from the search term keeps item selection', async () => {
         render(<AddCity />);
         const textField = screen.getByRole('textbox');
-        userEvent.type(textField, 'nd');
+        await userEvent.type(textField, 'nd');
         let cityElement = await screen.findByText('London');
-        userEvent.click(cityElement);
+        await userEvent.click(cityElement);
         expect(cityElement).toHaveClass('selected');
 
-        userEvent.type(textField, 'n');
+        userEvent.type(textField, '{backspace}');
         cityElement = await screen.findByText('London');
         expect(cityElement).toHaveClass('selected');
     });
