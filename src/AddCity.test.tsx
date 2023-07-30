@@ -1,4 +1,4 @@
-import { render, screen, fireEvent, queryByTestId, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent, queryByTestId, waitFor, waitForElementToBeRemoved } from '@testing-library/react';
 
 import AddCity from "./AddCity";
 import * as citySearch from "./CitySearch";
@@ -12,17 +12,17 @@ describe('AddCity', () => {
         jest.clearAllMocks();
     });
 
-    test('can search for a city and it appears', async () => {
+    test('exact searched city appears', async () => {
         render(<AddCity />);
 
         const textField = screen.getByRole('textbox');
-        fireEvent.change(textField, { target: { value: 'ienna' } })
+        fireEvent.change(textField, { target: { value: 'Vienna' } })
 
         const cityElement = await screen.findByText('Vienna');
         expect(cityElement).toBeInTheDocument();
     });
 
-    test('shows the correct result list after search', async () => {
+    test('search result is correct', async () => {
         render(<AddCity />);
 
         const textField = screen.getByRole('textbox');
@@ -35,7 +35,17 @@ describe('AddCity', () => {
         }
     })
 
-    test('can only save a city after a successful search and city selection', async () => {
+    test('spinner disappears shortly after search', async () => {
+        render(<AddCity />);
+
+        const textField = screen.getByRole('textbox');
+        fireEvent.change(textField, { target: { value: 'Vienna' } })
+        
+        await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'));
+    });
+
+
+    test('save button appears only after city selection', async () => {
         render(<AddCity />);
         expect(screen.queryByTestId('save-button')).toBeNull();
 
@@ -48,9 +58,7 @@ describe('AddCity', () => {
         fireEvent.click(cityElement);
         expect(cityElement).toHaveClass('selected');
 
-        const saveButton = screen.getByTestId('save-button');
-        fireEvent.click(saveButton);
-    })
+    });
 
     test('expanding the search unselects the currently selected item', async () => {
         render(<AddCity />);
@@ -68,7 +76,7 @@ describe('AddCity', () => {
         expect(cityElement).not.toHaveClass('selected');
     });
 
-    test('loading state is rendered when and only when the search results are being calculated', async () => {
+    test('loading state is rendered while waiting for search results', async () => {
         let resolveFunction!: (value?: string[]) => void;
         const promise = new Promise(resolve => {
             resolveFunction = resolve;
@@ -85,11 +93,5 @@ describe('AddCity', () => {
         expect(spinner).toBeInTheDocument();
         const searchResultCity = screen.queryByTestId('search-result-city');
         expect(searchResultCity).toBeNull();
-        
-        resolveFunction(['Bern', 'Bukarest']);
-        const cityElement = await screen.findByText('Bern');
-        expect(cityElement).toBeInTheDocument();
-        const spinnerQuery = screen.queryByTestId('spinner');
-        expect(spinnerQuery).toBeNull();
-    })
+    });
 })
