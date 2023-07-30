@@ -1,7 +1,8 @@
-import { render, screen, fireEvent, waitForElementToBeRemoved } from '@testing-library/react';
+import { render, screen, waitForElementToBeRemoved } from '@testing-library/react';
 
 import AddCity from "./AddCity";
 import * as citySearch from "./CitySearch";
+import userEvent from '@testing-library/user-event';
 
 describe('AddCity', () => {
     beforeEach(() => {
@@ -12,7 +13,7 @@ describe('AddCity', () => {
         render(<AddCity />);
 
         const textField = screen.getByRole('textbox');
-        fireEvent.change(textField, { target: { value: 'Vienna' } })
+        userEvent.type(textField, 'Vienna');
 
         const cityElement = await screen.findByText('Vienna');
         expect(cityElement).toBeInTheDocument();
@@ -22,7 +23,7 @@ describe('AddCity', () => {
         render(<AddCity />);
 
         const textField = screen.getByRole('textbox');
-        fireEvent.change(textField, { target: { value: 'ku' } })
+        userEvent.type(textField, 'ku');
 
         const capitalsToCheck = ['Kuwait City', 'Kuala Lumpur', "Nukuʻalofa", 'Baku'];
         for (let capital of capitalsToCheck) {
@@ -35,9 +36,9 @@ describe('AddCity', () => {
         render(<AddCity />);
 
         const textField = screen.getByRole('textbox');
-        fireEvent.change(textField, { target: { value: 'e' } })
+        userEvent.type(textField, 'e');
 
-        const searchResults = await screen.findAllByTestId('search-result-city')
+        const searchResults = await screen.findAllByTestId('search-result-city');
         expect(searchResults.length).toBeLessThanOrEqual(8);
     })
 
@@ -45,7 +46,7 @@ describe('AddCity', () => {
         render(<AddCity />);
 
         const textField = screen.getByRole('textbox');
-        fireEvent.change(textField, { target: { value: 'Vienna' } })
+        userEvent.type(textField, 'Vienna');
         
         await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'));
     });
@@ -61,7 +62,7 @@ describe('AddCity', () => {
         render(<AddCity />);
         
         const textField = screen.getByRole('textbox');
-        fireEvent.change(textField, { target: { value: 'l' } });
+        userEvent.type(textField, '1');
 
         const spinner = screen.getByTestId('spinner');
         expect(spinner).toBeInTheDocument();
@@ -76,12 +77,12 @@ describe('AddCity', () => {
         expect(screen.queryByTestId('save-button')).toBeNull();
 
         const textField = screen.getByRole('textbox');
-        fireEvent.change(textField, { target: { value: 'ndo' } })
+        userEvent.type(textField, 'ndo');
 
         const cityElement = await screen.findByText('London');
         expect(screen.queryByTestId('save-button')).toBeNull();
 
-        fireEvent.click(cityElement);
+        userEvent.click(cityElement);
         expect(cityElement).toHaveClass('selected');
 
     });
@@ -89,16 +90,16 @@ describe('AddCity', () => {
     test('expanding the search unselects the currently selected item', async () => {
         render(<AddCity />);
         const textField = screen.getByRole('textbox');
-        fireEvent.change(textField, { target: { value: 'ndo' } });
+        userEvent.type(textField, 'ndo');
         let cityElement = await screen.findByText('London');
-        fireEvent.click(cityElement);
+        userEvent.click(cityElement);
         expect(cityElement).toHaveClass('selected');
 
-        fireEvent.change(textField, { target: { value: 'ndok' } });
+        userEvent.type(textField, 'ndok');
         await waitForElementToBeRemoved(() => screen.getByTestId('spinner'));
         expect(cityElement).not.toBeInTheDocument();
 
-        fireEvent.change(textField, { target: { value: 'ndo' } });
+        userEvent.type(textField, 'ndo');
         cityElement = await screen.findByText('London');
         expect(cityElement).not.toHaveClass('selected');
     });
@@ -106,12 +107,12 @@ describe('AddCity', () => {
     test('deleting from the search term keeps item selection', async () => {
         render(<AddCity />);
         const textField = screen.getByRole('textbox');
-        fireEvent.change(textField, { target: { value: 'nd' } });
+        userEvent.type(textField, 'nd');
         let cityElement = await screen.findByText('London');
-        fireEvent.click(cityElement);
+        userEvent.click(cityElement);
         expect(cityElement).toHaveClass('selected');
 
-        fireEvent.change(textField, { target: { value: 'n' } });
+        userEvent.type(textField, 'n');
         cityElement = await screen.findByText('London');
         expect(cityElement).toHaveClass('selected');
     });
