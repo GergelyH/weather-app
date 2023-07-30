@@ -95,6 +95,7 @@ describe('AddCity', () => {
         expect(cityElement).toHaveClass('selected');
 
         fireEvent.change(textField, { target: { value: 'ndok' } });
+        await waitForElementToBeRemoved(() => screen.getByTestId('spinner'));
         expect(cityElement).not.toBeInTheDocument();
 
         fireEvent.change(textField, { target: { value: 'ndo' } });
