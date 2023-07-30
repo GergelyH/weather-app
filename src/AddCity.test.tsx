@@ -101,4 +101,17 @@ describe('AddCity', () => {
         cityElement = await screen.findByText('London');
         expect(cityElement).not.toHaveClass('selected');
     });
+
+    test('deleting from the search term keeps item selection', async () => {
+        render(<AddCity />);
+        const textField = screen.getByRole('textbox');
+        fireEvent.change(textField, { target: { value: 'nd' } });
+        let cityElement = await screen.findByText('London');
+        fireEvent.click(cityElement);
+        expect(cityElement).toHaveClass('selected');
+
+        fireEvent.change(textField, { target: { value: 'n' } });
+        cityElement = await screen.findByText('London');
+        expect(cityElement).toHaveClass('selected');
+    });
 })
