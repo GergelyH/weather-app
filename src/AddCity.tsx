@@ -5,11 +5,13 @@ import './Spinner.css';
 import { selectableCities } from './selectableCities';
 import { calculateCitySearchResults } from './CitySearch';
 import Spinner from './Spinner';
+import { useNavigate } from 'react-router-dom';
 
 function AddCity() {
     const [isLoading, setIsLoading] = useState(false);
     const [searchResults, setSearchResults] = useState<string[]>([]);
     const [selectedCityIndex, setSelectedCityIndex] = useState<number | null>(null);
+    const navigate = useNavigate();
     
     function onSearchResultClick(cityIndex: number) {
         if (cityIndex !== selectedCityIndex) {
@@ -63,6 +65,9 @@ function AddCity() {
     </div>
 
     return <>
+        <header>
+            <button onClick={() => navigate(-1)} data-testid='back-button'></button>
+        </header>
         <input onChange={onInputChange} data-testid='city-search-textbox'></input>
         {isLoading
             ? <Spinner />
