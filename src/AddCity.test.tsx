@@ -9,7 +9,7 @@ import * as citySearch from "./CitySearch";
 
 describe('AddCity', () => {
     beforeEach(() => {
-        jest.clearAllMocks();
+        jest.restoreAllMocks();
     });
 
     test('exact searched city appears', async () => {
