@@ -32,12 +32,18 @@ function AddCity() {
     }
 
     async function calculateSearchResults(searchValue:string){
-        const res = await calculateCitySearchResults(searchValue);
-        res.splice(8);
+        let res = await calculateCitySearchResults(searchValue);
         const selectedCity = getSelectedCity();
-        if (selectedCity && !res.includes(selectedCity)) {
+        if (selectedCity && res.includes(selectedCity)){
+            const newSelectedCityIdx = res.indexOf(selectedCity);
+            if (newSelectedCityIdx < 8){
+                [res[0],res[newSelectedCityIdx]] = [res[newSelectedCityIdx],res[0]];
+            }
+            setSelectedCityIndex(0);
+        } else {
             setSelectedCityIndex(null);
         }
+        res.splice(8);
         setSearchResults(res);
     }
     
