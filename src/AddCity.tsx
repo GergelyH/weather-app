@@ -33,6 +33,7 @@ function AddCity() {
 
     async function calculateSearchResults(searchValue:string){
         const res = await calculateCitySearchResults(searchValue);
+        res.splice(8);
         const selectedCity = getSelectedCity();
         if (selectedCity && !res.includes(selectedCity)) {
             setSelectedCityIndex(null);
