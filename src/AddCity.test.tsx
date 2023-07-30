@@ -5,6 +5,12 @@ import AddCity from './AddCity';
 import * as citySearch from "./CitySearch";
 import userEvent from '@testing-library/user-event';
 
+const mockNavigate = jest.fn();
+jest.mock('react-router-dom', () => ({
+    ...jest.requireActual('react-router-dom'),
+    useNavigate: () => mockNavigate,
+}));
+
 describe('AddCity', () => {
     beforeEach(() => {
         jest.restoreAllMocks();
@@ -14,7 +20,7 @@ describe('AddCity', () => {
             </BrowserRouter>
         );
     });
-    
+
     afterEach(cleanup);
 
     test('exact searched city appears', async () => {
@@ -113,15 +119,9 @@ describe('AddCity', () => {
     });
 
     test('clicking back button calls navigate', async () => {
-        const mockNavigate = jest.fn();
-        jest.mock('react-router-dom', () => ({
-          ...jest.requireActual('react-router-dom'),
-          useNavigate: () => mockNavigate,
-        }));
-
         const backArrow = screen.getByTestId('back-button');
         await userEvent.click(backArrow);
-        
-        expect(mockNavigate).toHaveBeenCalledWith(-1);
+
+        expect(mockNavigate).toBeCalledWith(-1);
     })
 })
