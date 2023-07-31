@@ -1,8 +1,7 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import classNames from "classnames";
 
 import './Spinner.css';
-import { selectableCities } from './selectableCities';
 import { calculateCitySearchResults } from './CitySearch';
 import Spinner from './Spinner';
 import { useNavigate } from 'react-router-dom';
