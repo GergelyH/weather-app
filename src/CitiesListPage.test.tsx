@@ -1,6 +1,6 @@
 import { BrowserRouter } from "react-router-dom";
 import { render, screen } from '@testing-library/react';
-import CitiesList from './CitiesList';
+import CitiesListPage from './CitiesListPage';
 import userEvent from "@testing-library/user-event";
 
 const mockedUsedNavigate = jest.fn();
@@ -13,7 +13,7 @@ it('renders the input cities', () => {
     const cities = ['Vienna', 'Chicago'];
     render(
         <BrowserRouter>
-            <CitiesList cities={cities}/>
+            <CitiesListPage cities={cities}/>
         </BrowserRouter>
     );
     for(let city of cities){
@@ -25,7 +25,7 @@ it('renders the input cities', () => {
 it('call navigates to /add-city on button press', async () => {
     const {getByRole} = render(
         <BrowserRouter>
-            <CitiesList cities={['Asd']}/>
+            <CitiesListPage cities={['Asd']}/>
         </BrowserRouter>
     );
     const buttonElement = screen.getByRole('button', {name: '+'});

@@ -1,8 +1,8 @@
 import { render, screen } from '@testing-library/react';
-import CityDetails from './CityDetails';
+import CityDetailsPage from './CityDetailsPage';
 
 it('renders the city name', () => {
-    render(<CityDetails city={'Budapest'}/>);
+    render(<CityDetailsPage city={'Budapest'}/>);
     const cityElement = screen.getByText('Budapest');
     expect(cityElement).toBeInTheDocument();
 })

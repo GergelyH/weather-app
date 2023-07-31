@@ -2,8 +2,8 @@ import React from 'react';
 import { createBrowserRouter, RouterProvider, } from "react-router-dom";
 
 import './App.css';
-import CitiesList from './CitiesList';
-import AddCity from './AddCity';
+import CitiesList from './CitiesListPage';
+import AddCity from './AddCityPage';
 
 const router = createBrowserRouter([
   {

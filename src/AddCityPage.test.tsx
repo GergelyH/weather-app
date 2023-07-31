@@ -1,7 +1,7 @@
 import { cleanup, render, screen, waitForElementToBeRemoved } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 
-import AddCity from './AddCity';
+import AddCityPage from './AddCityPage';
 import * as citySearch from "./CitySearch";
 import userEvent from '@testing-library/user-event';
 
@@ -11,12 +11,12 @@ jest.mock('react-router-dom', () => ({
     useNavigate: () => mockNavigate,
 }));
 
-describe('AddCity', () => {
+describe('AddCityPage', () => {
     beforeEach(() => {
         jest.restoreAllMocks();
         render(
             <BrowserRouter>
-                <AddCity />
+                <AddCityPage />
             </BrowserRouter>
         );
     });
