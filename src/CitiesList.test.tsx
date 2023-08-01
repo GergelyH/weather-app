@@ -1,6 +1,7 @@
 import { BrowserRouter } from "react-router-dom";
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import CitiesList from './CitiesList';
+import userEvent from "@testing-library/user-event";
 
 const mockedUsedNavigate = jest.fn();
 jest.mock("react-router", () => ({
@@ -28,6 +29,6 @@ it('call navigates to /add-city on button press', async () => {
         </BrowserRouter>
     );
     const buttonElement = screen.getByRole('button', {name: '+'});
-    await fireEvent.click(buttonElement);
+    await userEvent.click(buttonElement);
     expect(mockedUsedNavigate).toHaveBeenCalledWith('/add-city');
 })
