@@ -1,8 +1,10 @@
-import {render, screen} from '@testing-library/react';
-import City from './City';
+import React from "react";
+import { render } from "@testing-library/react";
 
-test('Renders and check if the city name can be found', () => {
-    const {getByText}  = render(<City name='Paris'/>);
+import City from "./City";
+
+test("Renders and check if the city name can be found", () => {
+    const { getByText } = render(<City name="Paris" />);
     const element = getByText(/Paris/i);
     expect(element).toBeInTheDocument();
-})
+});

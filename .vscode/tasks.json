@@ -2,11 +2,12 @@
 	"version": "2.0.0",
 	"tasks": [
 		{
-			"type": "eslint",
+			"type": "npm",
 			"problemMatcher": [
 				"$eslint-stylish"
 			],
-			"label": "eslint: lint whole folder"
+            "script": "lint" ,
+			"label": "npm lint"
 		}
 	]
 }

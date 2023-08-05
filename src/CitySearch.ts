@@ -1,9 +1,9 @@
-import { selectableCities } from './selectableCities';
+import selectableCities from "./selectableCities";
 
-export async function calculateCitySearchResults(searchValue: string): Promise<string[]> {
+export default async function calculateCitySearchResults(searchValue: string): Promise<string[]> {
     const res: string[] = [];
-    if (searchValue) {
-        for (let city of selectableCities) {
+    if (searchValue !== "") {
+        for (const city of selectableCities) {
             if (city.toLocaleLowerCase().includes(searchValue.toLowerCase())) {
                 res.push(city);
             }

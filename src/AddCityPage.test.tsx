@@ -1,127 +1,148 @@
-import { cleanup, render, screen, waitForElementToBeRemoved } from '@testing-library/react';
-import { BrowserRouter } from 'react-router-dom';
+import React from "react";
+import { act, cleanup, render, waitFor } from "@testing-library/react";
+import { screen } from "@testing-library/dom";
+import { BrowserRouter } from "react-router-dom";
 
-import AddCityPage from './AddCityPage';
+import userEvent from "@testing-library/user-event";
+import AddCityPage from "./AddCityPage";
 import * as citySearch from "./CitySearch";
-import userEvent from '@testing-library/user-event';
 
 const mockNavigate = jest.fn();
-jest.mock('react-router-dom', () => ({
-    ...jest.requireActual('react-router-dom'),
+jest.mock("react-router-dom", () => ({
+    ...jest.requireActual("react-router-dom"),
     useNavigate: () => mockNavigate,
 }));
 
-describe('AddCityPage', () => {
+describe("AddCityPage", () => {
     beforeEach(() => {
         jest.restoreAllMocks();
-        render(
-            <BrowserRouter>
-                <AddCityPage />
-            </BrowserRouter>
-        );
     });
 
     afterEach(cleanup);
 
-    test('exact searched city appears', async () => {
-        const textField = screen.getByRole('textbox');
-        userEvent.type(textField, 'Vienna');
+    function setup() {
+        return {
+            user: userEvent.setup(),
+            ...render(
+                <BrowserRouter>
+                    <AddCityPage />
+                </BrowserRouter>,
+            ),
+        };
+    }
 
-        const cityElement = await screen.findByText('Vienna');
+    test("exact searched city appears", async () => {
+        const { user } = setup();
+        const textField = screen.getByRole("textbox");
+        await user.type(textField, "Vienna");
+
+        const cityElement = await screen.findByText("Vienna");
         expect(cityElement).toBeInTheDocument();
     });
 
-    test('search result is correct', async () => {
-        const textField = screen.getByRole('textbox');
-        userEvent.type(textField, 'ku');
+    test("search result is correct", async () => {
+        const { user } = setup();
+        const textField = screen.getByRole("textbox");
+        await user.type(textField, "ku");
 
-        const capitalsToCheck = ['Kuwait City', 'Kuala Lumpur', "Nukuʻalofa", 'Baku'];
-        for (let capital of capitalsToCheck) {
-            const cityElement = await screen.findByText(capital);
+        const capitalsToCheck = ["Kuwait City", "Kuala Lumpur", "Nukuʻalofa", "Baku"];
+        const cityElementPromises = capitalsToCheck.map((capital) => screen.findByText(capital));
+
+        const cityElements = await Promise.all(cityElementPromises);
+
+        cityElements.forEach((cityElement) => {
             expect(cityElement).toBeInTheDocument();
-        }
-    })
-
-    test('maximum 8 search results are rendered', async () => {
-        const textField = screen.getByRole('textbox');
-        userEvent.type(textField, 'e');
-
-        const searchResults = await screen.findAllByTestId('search-result-city');
-        expect(searchResults.length).toBeLessThanOrEqual(8);
-    })
-
-    test('spinner disappears shortly after search', async () => {
-        const textField = screen.getByRole('textbox');
-        userEvent.type(textField, 'Vienna');
-
-        await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'));
+        });
     });
 
-    test('loading state is rendered while waiting for search results', async () => {
+    test("maximum 8 search results are rendered", async () => {
+        const { user } = setup();
+        const textField = screen.getByRole("textbox");
+        user.type(textField, "e");
+
+        const searchResults = await screen.findAllByTestId("search-result-city");
+        expect(searchResults.length).toBeLessThanOrEqual(8);
+    });
+
+    test("loading state is only rendered while waiting for search results", async () => {
+        const { user } = setup();
         let resolveFunction!: (value?: string[]) => void;
-        const promise = new Promise(resolve => {
+        const promise = new Promise((resolve) => {
             resolveFunction = resolve;
         });
-        const calculateCitySearchResults = jest.spyOn(citySearch, 'calculateCitySearchResults');
+        const calculateCitySearchResults = jest.spyOn(citySearch, "default");
         (calculateCitySearchResults as jest.Mock).mockImplementation(() => promise);
 
-        const textField = screen.getByRole('textbox');
-        userEvent.type(textField, '1');
+        const textField = screen.getByRole("textbox");
+        await user.type(textField, "1");
 
-        const spinner = screen.getByTestId('spinner');
-        expect(spinner).toBeInTheDocument();
-        const searchResultCity = screen.queryByTestId('search-result-city');
+        const spinnerElement = screen.getByTestId("spinner");
+        expect(spinnerElement).toBeInTheDocument();
+        const searchResultCity = screen.queryByTestId("search-result-city");
         expect(searchResultCity).toBeNull();
 
-        resolveFunction([]);
+        await act(() => {
+            resolveFunction([]);
+        });
+        expect(spinnerElement).not.toBeInTheDocument();
     });
 
-    test('save button appears only after city selection', async () => {
-        expect(screen.queryByTestId('save-button')).toBeNull();
+    test("expanding the search unselects the currently selected item", async () => {
+        const { user } = setup();
+        expect(screen.queryByTestId("save-button")).toBeNull();
+        const textField = screen.getByRole("textbox");
+        await user.type(textField, "London");
 
-        const textField = screen.getByRole('textbox');
-        userEvent.type(textField, 'ndo')
+        await waitFor(() => expect(screen.queryByTestId("spinner")).not.toBeInTheDocument());
+        let cityElement = await screen.getByText("London");
+        await user.click(cityElement);
+        expect(cityElement).toHaveClass("selected");
 
-        const cityElement = await screen.findByText('London');
-        expect(screen.queryByTestId('save-button')).toBeNull();
-
-        await userEvent.click(cityElement);
-        expect(cityElement).toHaveClass('selected');
-
-    });
-
-    test('expanding the search unselects the currently selected item', async () => {
-        const textField = screen.getByRole('textbox');
-        userEvent.type(textField, 'ndo');
-        let cityElement = await screen.findByText('London');
-        await userEvent.click(cityElement);
-        expect(cityElement).toHaveClass('selected');
-
-        await userEvent.type(textField, 'k');
-        await waitForElementToBeRemoved(() => screen.getByTestId('spinner'));
+        await user.type(textField, "k");
         expect(cityElement).not.toBeInTheDocument();
 
-        await userEvent.type(textField, '{backspace}');
-        cityElement = await screen.findByText('London');
-        expect(cityElement).not.toHaveClass('selected');
+        await user.type(textField, "{backspace}");
+        cityElement = await screen.findByText("London");
+        expect(cityElement).not.toHaveClass("selected");
     });
 
-    test('deleting from the search term keeps item selection', async () => {
-        const textField = screen.getByRole('textbox');
-        await userEvent.type(textField, 'nd');
-        let cityElement = await screen.findByText('London');
-        await userEvent.click(cityElement);
-        expect(cityElement).toHaveClass('selected');
+    test("save button appears only after city selection", async () => {
+        const { user, getByText } = setup();
 
-        userEvent.type(textField, '{backspace}');
-        cityElement = await screen.findByText('London');
-        expect(cityElement).toHaveClass('selected');
+        expect(screen.queryByTestId("save-button")).toBeNull();
+
+        const textField = screen.getByRole("textbox");
+        // await fireEvent.change(textField, {target: {value: 'ndo'}});
+        await user.type(textField, "London");
+        await waitFor(() => expect(screen.queryByTestId("spinner")).not.toBeInTheDocument());
+
+        const cityElement = await getByText("London");
+        expect(screen.queryByTestId("save-button")).toBeNull();
+
+        await user.click(cityElement);
+        expect(cityElement).toHaveClass("selected");
     });
 
-    test('clicking back button calls navigate', async () => {
-        const backArrow = screen.getByTestId('back-button');
-        await userEvent.click(backArrow);
+    test("deleting from the search term keeps item selection", async () => {
+        const { user } = setup();
+
+        const textField = screen.getByRole("textbox");
+        await user.type(textField, "ndo");
+        let cityElement = await screen.findByText("London");
+        await user.click(cityElement);
+        expect(cityElement).toHaveClass("selected");
+
+        await user.type(textField, "{backspace}");
+        cityElement = await screen.findByText("London");
+        expect(cityElement).toHaveClass("selected");
+    });
+
+    test("clicking back button calls navigate", async () => {
+        const { user } = setup();
+
+        const backArrow = screen.getByTestId("back-button");
+        await user.click(backArrow);
 
         expect(mockNavigate).toBeCalledWith(-1);
-    })
-})
+    });
+});
