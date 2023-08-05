@@ -1,77 +1,91 @@
-import { useState } from 'react';
+import React, { useState } from "react";
 import classNames from "classnames";
 
-import './Spinner.css';
-import { calculateCitySearchResults } from './CitySearch';
-import Spinner from './Spinner';
-import { useNavigate } from 'react-router-dom';
+import "./AddCity.css";
+import "./Spinner.css";
+import { useNavigate } from "react-router-dom";
+import calculateCitySearchResults from "./CitySearch";
+import Spinner from "./Spinner";
 
-function AddCity() {
-    const [isLoading, setIsLoading] = useState(false);
-    const [searchResults, setSearchResults] = useState<string[]>([]);
+type SearchState = { type: "loading" } | { type: "loaded"; data: string[] };
+
+function AddCityPage() {
+    // const [isLoading, setIsLoading] = useState(false);
+    // const [searchResults, setSearchResults] = useState<string[]>([]);
+    const [searchState, setSearchState] = useState<SearchState>({ type: "loaded", data: [] });
     const [selectedCityIndex, setSelectedCityIndex] = useState<number | null>(null);
     const navigate = useNavigate();
-    
+
     function onSearchResultClick(cityIndex: number) {
         if (cityIndex !== selectedCityIndex) {
             setSelectedCityIndex(cityIndex);
-        }
-        else {
-            setSelectedCityIndex(null);
-        }
-    }
-
-    async function onInputChange(e: React.FormEvent<HTMLInputElement>){
-        const searchValue = e.currentTarget.value;
-        setIsLoading(true);
-        await calculateSearchResults(searchValue);
-        setIsLoading(false);
-    }
-    
-    function getSelectedCity(){
-        return selectedCityIndex === null ? null : searchResults[selectedCityIndex];
-    }
-
-    async function calculateSearchResults(searchValue:string){
-        let res = await calculateCitySearchResults(searchValue);
-        const selectedCity = getSelectedCity();
-        if (selectedCity && res.includes(selectedCity)){
-            const newSelectedCityIdx = res.indexOf(selectedCity);
-            if (newSelectedCityIdx < 8){
-                [res[0],res[newSelectedCityIdx]] = [res[newSelectedCityIdx],res[0]];
-            }
-            setSelectedCityIndex(0);
         } else {
             setSelectedCityIndex(null);
         }
-        res.splice(8);
-        setSearchResults(res);
     }
-    
-    const cityList = searchResults.map((city, index) =>
-        <p 
-            className={classNames({ 'selected': index === selectedCityIndex })}
+
+    function getSelectedCity() {
+        return selectedCityIndex !== null && searchState.type === "loaded"
+            ? searchState.data[selectedCityIndex]
+            : null;
+    }
+
+    function getCitySearchResults() {
+        return searchState.type === "loaded" ? searchState.data : [];
+    }
+
+    async function getSearchResult(searchValue: string) {
+        const res = await calculateCitySearchResults(searchValue);
+        let newSelectedCityIndex = selectedCityIndex;
+        const selectedCity = getSelectedCity();
+        if (selectedCity && res.includes(selectedCity)) {
+            const newSelectedCityIdx = res.indexOf(selectedCity);
+            [res[0], res[newSelectedCityIdx]] = [res[newSelectedCityIdx], res[0]];
+            newSelectedCityIndex = 0;
+        } else {
+            newSelectedCityIndex = null;
+        }
+        res.splice(8);
+        return { searchResults: res, newSelectedCityIndex };
+    }
+
+    async function updateSearchResults(searchValue: string) {
+        setSearchState({ type: "loading" });
+        const { newSelectedCityIndex, searchResults } = await getSearchResult(searchValue);
+        setSelectedCityIndex(newSelectedCityIndex);
+        setSearchState({ type: "loaded", data: searchResults });
+    }
+
+    const cityList = getCitySearchResults().map((city, index) => (
+        <div
+            className={classNames({ selected: index === selectedCityIndex })}
             onClick={() => onSearchResultClick(index)}
-            data-testid='search-result-city'
+            data-testid="search-result-city"
             key={index}
         >
             {city}
-        </p>
-    );
-    const loadedContent = <div>
-        {cityList}
-        {selectedCityIndex !== null && <button data-testid='save-button'></button>}
-    </div>
+        </div>
+    ));
 
-    return <>
-        <header>
-            <button onClick={() => navigate(-1)} data-testid='back-button'></button>
-        </header>
-        <input onChange={onInputChange} data-testid='city-search-textbox'></input>
-        {isLoading
-            ? <Spinner />
-            : loadedContent} 
-    </>
+    const loadedContent = (
+        <div>
+            {cityList}
+            {selectedCityIndex !== null && <button data-testid="save-button"></button>}
+        </div>
+    );
+
+    return (
+        <>
+            <header>
+                <button onClick={() => navigate(-1)} data-testid="back-button"></button>
+            </header>
+            <input
+                onChange={(e) => updateSearchResults(e.currentTarget.value)}
+                data-testid="city-search-textbox"
+            ></input>
+            {searchState.type === "loading" ? <Spinner /> : loadedContent}
+        </>
+    );
 }
 
-export default AddCity;
+export default AddCityPage;
