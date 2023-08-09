@@ -1,7 +1,11 @@
 import React from "react";
 import { Link } from "react-router-dom";
 
-function City(props: { name: string }) {
+export interface CityProps {
+    name: string;
+}
+
+function City(props: CityProps) {
     const { name } = props;
     return <Link to={`/city/${name}`}>{name}</Link>;
 }
