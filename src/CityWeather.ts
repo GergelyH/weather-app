@@ -140,7 +140,8 @@ const mockJsonResponse = `
     "cod": 200
 }`;
 
-export function getWeather() {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export async function getWeather(city: string) {
     return weather.parse(mockJsonResponse);
 }
 
