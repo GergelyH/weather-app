@@ -122,7 +122,9 @@ const mockJsonResponse = `
     },
     "rain": {
       "1h": 3.16
-    }, Time of data calculation, unix, UTC
+    },
+    "clouds": {
+      "all": 100
     },
     "dt": 1661870592,
     "sys": {
@@ -136,8 +138,7 @@ const mockJsonResponse = `
     "id": 3163858,
     "name": "Zocca",
     "cod": 200
-}
-`;
+}`;
 
 export function getWeather() {
     return weather.parse(mockJsonResponse);
