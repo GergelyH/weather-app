@@ -9,12 +9,13 @@ function CitiesList(props: { cities: string[] }) {
         navigate("/add-city");
     }
 
+    const { cities } = props;
     return (
         <div data-testid="cities-list">
-            {props.cities.map((city, index) => (
-                <City name={city} key={index} />
+            {cities.map((city) => (
+                <City name={city} />
             ))}
-            <button data-testid="add-city-button" onClick={addCityOnClick}>
+            <button type="submit" data-testid="add-city-button" onClick={addCityOnClick}>
                 +
             </button>
         </div>

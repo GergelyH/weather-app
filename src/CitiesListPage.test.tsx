@@ -1,12 +1,14 @@
 import React from "react";
+import { NavigateFunction } from "react-router";
 import { BrowserRouter } from "react-router-dom";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+
 import CitiesListPage from "./CitiesListPage";
 
-const mockedUsedNavigate = jest.fn();
+const mockedUsedNavigate = jest.fn<NavigateFunction, []>();
 jest.mock("react-router", () => ({
-    ...(jest.requireActual("react-router") as any),
+    ...(jest.requireActual("react-router") as Record<string, unknown>),
     useNavigate: () => mockedUsedNavigate,
 }));
 

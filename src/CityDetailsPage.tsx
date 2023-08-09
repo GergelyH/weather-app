@@ -1,7 +1,8 @@
 import React from "react";
 
 function CityDetails(props: { city: string }) {
-    return <p>{props.city}</p>;
+    const { city } = props;
+    return <p>{city}</p>;
 }
 
 export default CityDetails;

@@ -3,13 +3,9 @@
         "browser": true
     },
     "extends": [
-        // "standard-with-typescript",
-        "airbnb-base",
+        "plugin:@typescript-eslint/recommended",
+        "airbnb",
         "airbnb-typescript",
-        "plugin:react/recommended",
-        "plugin:import/errors",
-        "plugin:import/warnings",
-        "plugin:import/typescript",
         "prettier"
     ],
     "ignorePatterns": ["cypress.config.ts"],
@@ -23,12 +19,22 @@
     },
     "plugins": [
         "react",
-        "prettier"
+        "prettier",
+        "@typescript-eslint"
     ],
     "rules": {
         "prettier/prettier": "error",
         "no-restricted-syntax": ["error", "ForInStatement", "LabeledStatement", "WithStatement"],
-        "max-len": ["error", {"code": 100, "ignoreUrls": true}]
+        "max-len": ["error", {"code": 100, "ignoreUrls": true}],
+        "@typescript-eslint/no-floating-promises": "error",
+        "@typescript-eslint/no-misused-promises": [
+            "error",
+            {
+                "checksVoidReturn": {
+                  "attributes": false
+                }
+            }
+        ]
     },
     "settings": {
         "import/resolver": {

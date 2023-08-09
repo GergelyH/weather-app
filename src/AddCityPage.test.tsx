@@ -58,7 +58,7 @@ describe("AddCityPage", () => {
     test("maximum 8 search results are rendered", async () => {
         const { user } = setup();
         const textField = screen.getByRole("textbox");
-        user.type(textField, "e");
+        await user.type(textField, "e");
 
         const searchResults = await screen.findAllByTestId("search-result-city");
         expect(searchResults.length).toBeLessThanOrEqual(8);

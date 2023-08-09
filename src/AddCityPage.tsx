@@ -57,32 +57,40 @@ function AddCityPage() {
     }
 
     const cityList = getCitySearchResults().map((city, index) => (
-        <div
+        <option
             className={classNames({ selected: index === selectedCityIndex })}
             onClick={() => onSearchResultClick(index)}
             data-testid="search-result-city"
-            key={index}
         >
             {city}
-        </div>
+        </option>
     ));
 
     const loadedContent = (
         <div>
-            {cityList}
-            {selectedCityIndex !== null && <button data-testid="save-button"></button>}
+            <select>{cityList}</select>
+            {selectedCityIndex !== null && (
+                <button type="submit" data-testid="save-button">
+                    Save
+                </button>
+            )}
         </div>
     );
 
     return (
         <>
             <header>
-                <button onClick={() => navigate(-1)} data-testid="back-button"></button>
+                <button
+                    type="button"
+                    aria-label="Back"
+                    onClick={() => navigate(-1)}
+                    data-testid="back-button"
+                />
             </header>
             <input
                 onChange={(e) => updateSearchResults(e.currentTarget.value)}
                 data-testid="city-search-textbox"
-            ></input>
+            />
             {searchState.type === "loading" ? <Spinner /> : loadedContent}
         </>
     );
