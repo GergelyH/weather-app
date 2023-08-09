@@ -1,8 +1,9 @@
 import React from "react";
+import { Link } from "react-router-dom";
 
 function City(props: { name: string }) {
     const { name } = props;
-    return <div>{name}</div>;
+    return <Link to={`/city/${name}`}>{name}</Link>;
 }
 
 export default City;
