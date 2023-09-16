@@ -68,7 +68,7 @@ function AddCityPage() {
 
     const loadedContent = (
         <div>
-            <select>{cityList}</select>
+            <select size={cityList.length}>{cityList}</select>
             {selectedCityIndex !== null && (
                 <button type="submit" data-testid="save-button">
                     Save
