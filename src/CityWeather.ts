@@ -1,17 +1,7 @@
 import { z } from "zod";
 
-const ApiCoord = z.object({
-    lon: z.number(),
-    lat: z.number(),
-});
-
-const coordDef = ApiCoord.transform((apiCoord) => ({
-    longitude: apiCoord.lon,
-    latitude: apiCoord.lat,
-    ...apiCoord,
-}));
-
-export type Coord = z.infer<typeof coordDef>;
+import apiKey from "./openWeatherApiKey";
+import { coordDef, Coord, getCoord } from "./GeoCoding";
 
 const WeatherCondition = z.object({
     id: z.number(),
@@ -80,16 +70,16 @@ const ApiWeather = z.object({
     timezone: z.number(),
 });
 
-const weather = ApiWeather.transform((apiWeatherResponse) => ({
+const weatherDef = ApiWeather.transform((apiWeatherResponse) => ({
     weatherCondition: apiWeatherResponse.weather,
     dataCalculationTime: apiWeatherResponse.dt,
     apiInternal: apiWeatherResponse.sys,
     ...apiWeatherResponse,
 }));
 
-export type Weather = z.infer<typeof weather>;
+export type Weather = z.infer<typeof weatherDef>;
 
-const mockJsonResponse = `
+export const mockResponse = `
 {
     "coord": {
       "lon": 10.99,
@@ -140,9 +130,22 @@ const mockJsonResponse = `
     "cod": 200
 }`;
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-export async function getWeather(city: string) {
-    return weather.parse(mockJsonResponse);
+async function getWeatherFromCoordResponse(coord: Coord): Promise<string> {
+    const resp = await fetch(
+        `https://api.openweathermap.org/data/2.5/weather?lat=${coord.latitude}&lon=${coord.longitude}&appid=${apiKey}`,
+    );
+    return resp.text();
+}
+
+export async function getWeatherFromCoord(coord: Coord): Promise<Weather> {
+    const resp = await getWeatherFromCoordResponse(coord);
+    return weatherDef.parse(resp);
+}
+
+export async function getWeather(cityName: string): Promise<Weather> {
+    const coord = await getCoord(cityName);
+    const weather = getWeatherFromCoord(coord);
+    return weather;
 }
 
 export default getWeather;
